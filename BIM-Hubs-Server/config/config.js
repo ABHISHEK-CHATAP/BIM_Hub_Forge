@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+const config = dotenv.config();
 let {
   APS_CLIENT_ID,
   APS_CLIENT_SECRET,
@@ -17,7 +19,6 @@ if (
 }
 const INTERNAL_TOKEN_SCOPES = ["data:read"];
 const PUBLIC_TOKEN_SCOPES = ["viewables:read"];
-
 
 export default {
   APS_CLIENT_ID,
