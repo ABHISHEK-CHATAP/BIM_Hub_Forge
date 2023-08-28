@@ -9,7 +9,9 @@ const {
 let router = express.Router();
 
 router.get("/api/auth/login", function (req, res) {
+  res.json(getAuthorizationUrl());
   res.redirect(getAuthorizationUrl());
+  
 });
 
 router.get("/api/auth/logout", function (req, res) {
@@ -18,7 +20,7 @@ router.get("/api/auth/logout", function (req, res) {
 });
 
 router.get("/api/auth/callback", authCallbackMiddleware, function (req, res) {
-  res.redirect("/home");
+  res.redirect("http://localhost:5173/home");
 });
 
 router.get("/api/auth/token", authRefreshMiddleware, function (req, res) {
