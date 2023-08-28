@@ -1,42 +1,41 @@
-import express from "express";
-import getPublicToken from "../services/aps";
-import {
-  APS_CLIENT_ID,
-  APS_CLIENT_SECRET,
-  APS_CALLBACK_URL,
-  PUBLIC_TOKEN_SCOPES,
-  INTERNAL_TOKEN_SCOPES,
-} from "../config/config";
-const router = express.Router();
+const express = require("express");
+const {
+  getAuthorizationUrl,
+  authCallbackMiddleware,
+  authRefreshMiddleware,
+  getUserProfile,
+} = require("../services/aps.js");
 
-// Endpoint to get the public Oauth token
-router.get("/api/auth/token", async function (req, res, next) {
-  try {
-    res.json(await getPublicToken());
-  } catch (err) {
-    next(err);
-  }
+let router = express.Router();
+
+router.get("/api/auth/login", function (req, res) {
+  res.redirect(getAuthorizationUrl());
 });
 
-// router.post('/api/signin', async (req, res) => {
-//   const { email, password } = req.body;
+router.get("/api/auth/logout", function (req, res) {
+  req.session = null;
+  res.redirect("/");
+});
 
-//   try {
-//     // Exchange email and password for an access token
-//     const oAuth2Client = new OAuth2ThreeLegged({
-//       clientId: APS_CLIENT_ID,
-//       clientSecret: APS_CLIENT_SECRET,
-//       redirectUri: APS_CALLBACK_URL,
-//     });
+router.get("/api/auth/callback", authCallbackMiddleware, function (req, res) {
+  res.redirect("/home");
+});
 
-//     const tokenResponse = await oAuth2Client.authenticate(['data:read'], 'email', email, 'password', password);
-//     const accessToken = tokenResponse.access_token;
+router.get("/api/auth/token", authRefreshMiddleware, function (req, res) {
+  res.json(req.publicOAuthToken);
+});
 
-//     res.json({ accessToken });
-//   } catch (error) {
-//     console.error('Error signing in:', error);
-//     res.status(500).json({ error: 'An error occurred while signing in' });
-//   }
-// })
+router.get(
+  "/api/auth/profile",
+  authRefreshMiddleware,
+  async function (req, res, next) {
+    try {
+      const profile = await getUserProfile(req.internalOAuthToken);
+      res.json({ name: `${profile.firstName} ${profile.lastName}` });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
-export default router;
+module.exports = router;

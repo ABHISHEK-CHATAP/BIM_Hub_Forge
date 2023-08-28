@@ -1,12 +1,14 @@
-import express from "express";
-import session from "cookie-session";
-// import PORT  from "./config/config.js";
-// import SERVER_SESSION_SECRET from "./config/config.js"
-const SERVER_SESSION_SECRET = "custom-encryption-phrase";
-const PORT = 8080;
-const app = express();
+const express = require("express");
+const session = require("cookie-session");
+const { PORT, SERVER_SESSION_SECRET } = require("./config/config.js");
+
+let app = express();
 
 app.use(
   session({ secret: SERVER_SESSION_SECRET, maxAge: 24 * 60 * 60 * 1000 })
 );
-app.listen(PORT, () => console.log(`Server listening on port http://localhost:${PORT}`));
+app.use(require('./routes/auth.js'));
+app.use(require('./routes/hubs.js'));
+app.listen(PORT, () =>
+  console.log("server is running on http://localhost:8080")
+);
