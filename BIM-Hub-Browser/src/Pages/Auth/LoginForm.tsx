@@ -1,19 +1,8 @@
 import React from "react";
-import {
-  Grid,
-  Box,
-  TextField,
-  Button,
-  Typography,
-  Container,
-  InputAdornment 
-} from "@mui/material";
-import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Grid, Box, Button, Typography, Container } from "@mui/material";
 import illustration from "../../assets/Illustration.svg";
 
 const LoginForm = () => {
-    
   return (
     <Container sx={{ margin: "20px" }}>
       <Grid
@@ -21,9 +10,10 @@ const LoginForm = () => {
         component="main"
         sx={{
           height: "90vh",
-          width: "96vw",
+          width: "90vw",
           display: "flex",
           alignItems: "center",
+          justifyContent: "center",
         }}
       >
         <Grid
@@ -41,13 +31,7 @@ const LoginForm = () => {
             alignItems: "center",
           }}
         />
-        <Grid
-          item
-          xs={12}
-          sm={5}
-          md={5}
-          ml={4}
-        >
+        <Grid item xs={12} sm={4} md={4} ml={4}>
           <Grid
             sx={{
               display: "flex",
@@ -57,55 +41,34 @@ const LoginForm = () => {
               height: "90vh",
             }}
           >
-            <Typography component="h1" variant="h5" fontWeight={600} textAlign="left">
-              Sign In to Your Account!
+            <Typography
+              component="h1"
+              variant="h5"
+              fontWeight={600}
+              textAlign="left"
+              width="100%"
+            >
+              Welcome to BIM Browser!!
             </Typography>
-            <Typography component="h4" variant="h6" >
-                Welcome back! please enter your detail
+            <Typography
+              component="h4"
+              variant="h6"
+              textAlign="left"
+              width="100%"
+              mt={3}
+            >
+              You are only step away from getting the access to BIM Hubs
+              Dashboard and Viewer
             </Typography>
-            <Box sx={{ mt: 1 }}>
-              <form >
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <MailOutlineRoundedIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                  autoFocus
-                />
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LockOutlinedIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
-                >
-                  Sign In
-                </Button>
-              </form>
+            <Box sx={{ mt: 1, width: "100%" }}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="outlined"
+                sx={{ mt: 3, mb: 2 }}
+              >
+                Sign In
+              </Button>
             </Box>
           </Grid>
         </Grid>
