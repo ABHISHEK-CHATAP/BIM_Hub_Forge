@@ -1,8 +1,22 @@
-import React from "react";
 import { Grid, Box, Button, Typography, Container } from "@mui/material";
 import illustration from "../../assets/Illustration.svg";
-
+import axios from "axios";
 const LoginForm = () => {
+  const handleAuthentication = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/auth/login");
+      const redirectUrl = response.data;
+
+      // Redirect the user to the obtained URL
+      window.location.href = redirectUrl;
+
+      return response;
+    } catch (error) {
+      // Handle login error
+      console.log(error);
+    }
+  };
+
   return (
     <Container sx={{ margin: "20px" }}>
       <Grid
@@ -66,6 +80,7 @@ const LoginForm = () => {
                 fullWidth
                 variant="outlined"
                 sx={{ mt: 3, mb: 2 }}
+                onClick={handleAuthentication}
               >
                 Sign In
               </Button>
