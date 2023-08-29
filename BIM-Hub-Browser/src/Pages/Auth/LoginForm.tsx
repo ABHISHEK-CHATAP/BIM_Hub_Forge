@@ -5,10 +5,14 @@ const LoginForm = () => {
   const handleAuthentication = async () => {
     try {
       const response = await axios.get("http://localhost:8080/api/auth/login");
-      const redirectUrl = response.data;
 
       // Redirect the user to the obtained URL
-      window.location.href = redirectUrl;
+      if (response.status === 200) {
+        console.log(response.data);
+
+        const redirectUrl = response.data.redirectUrl;
+        window.location.href = redirectUrl;
+      }
 
       return response;
     } catch (error) {
