@@ -16,7 +16,7 @@ if (
   process.exit(1);
 }
 const INTERNAL_TOKEN_SCOPES = ["data:read"];
-const PUBLIC_TOKEN_SCOPES = ["viewables:read"];
+const PUBLIC_TOKEN_SCOPES = ["data:read"];
 PORT = PORT || 8080;
 
 module.exports = {
