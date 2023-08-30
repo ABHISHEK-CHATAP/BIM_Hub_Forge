@@ -9,20 +9,30 @@ const {
 let router = express.Router();
 
 router.get("/api/auth/login", function (req, res) {
-  res.json({redirectUrl: getAuthorizationUrl()});
+  res.json({ redirectUrl: getAuthorizationUrl() });
 });
 
 router.get("/api/auth/logout", function (req, res) {
   req.session = null;
-  res.redirect("/");
+  res.redirect("http://localhost:5173");
 });
 
 router.get("/api/auth/callback", authCallbackMiddleware, function (req, res) {
+  res.cookie(
+    "sessionData",
+    JSON.stringify({
+      public_token: req.session.public_token,
+      refresh_token: req.session.refresh_token,
+      expires_at: req.session.expires_at,
+    })
+  );
   res.redirect("http://localhost:5173/home");
 });
 
-router.get("/api/auth/token", authRefreshMiddleware, function (req, res) {
+router.get("/api/auth/token",authRefreshMiddleware, function (req, res) {
+  
   res.json(req.publicOAuthToken);
+
 });
 
 router.get(

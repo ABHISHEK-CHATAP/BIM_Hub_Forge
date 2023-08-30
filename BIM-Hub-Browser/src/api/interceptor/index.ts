@@ -10,7 +10,9 @@ export const isHandlerEnabled = (config: Config = {}): boolean =>
 export const requestHandler = async (request: any) => {
   if (isHandlerEnabled(request)) {
     const temp = JSON.parse(localStorage.getItem("token") || "{}");
-    const token = temp.access_token;
+    console.log(temp,"token");
+    
+    const token = temp.public_token;
     if (token) {
       request.headers.Authorization = `Bearer ${token}`;
     } else {
