@@ -11,7 +11,7 @@ const corsOptions = {
   methods: "GET,PUT,PATCH,POST,DELETE",
   optionsSuccessStatus: 204, 
 };
-app.use(cors());
+app.use(cors(corsOptions));
 
 app.use(
   session({ secret: SERVER_SESSION_SECRET, maxAge: 24 * 60 * 60 * 1000 })
