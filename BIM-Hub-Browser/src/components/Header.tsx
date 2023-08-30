@@ -12,6 +12,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import API from "../api";
+import axios from "axios";
 import { getCookie } from "../utils/getCookiesData";
 const settings = ["Profile", "Logout"];
 
@@ -26,25 +27,34 @@ const Header = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const myCookieValue = getCookie("sessionData");
+  const myCookieValue = JSON.parse(getCookie("sessionData") || "{}");
+  console.log(myCookieValue);
+
   localStorage.setItem("token", myCookieValue || "{}");
 
-  React.useEffect(() => {
-    // Function to fetch user profile details from the API
-    const fetchUserProfile = async () => {
-      try {
-        const response = await API.get("api/auth/profile");
-        const data = await response.data;
-        console.log(response);
+  // React.useEffect(() => {
+  //   // Define the headers with the authorization token
+  //   const headers = {
+  //     Authorization: `Bearer ${myCookieValue.internal_token}`,
+  //     "Content-Type": "application/json",
+  //   };
 
-        setUserProfile(data);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
+  //   // Define the API endpoint
+  //   const apiUrl = "http://localhost:8080/api/auth/profile";
 
-    fetchUserProfile();
-  }, []);
+  //   // Make the API call with the headers
+  //   axios
+  //     .get(apiUrl, { headers })
+  //     .then((response) => {
+  //       // Handle the response
+  //       setUserProfile(response.data);
+  //     })
+  //     .catch((error) => {
+  //       // Handle errors
+  //       console.error("Error:", error);
+  //     });
+  // }, []);
+
   return (
     <div>
       <AppBar position="static" sx={{ height: "6vh", boxShadow: "none" }}>

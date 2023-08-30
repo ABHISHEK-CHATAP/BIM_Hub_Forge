@@ -19,7 +19,7 @@ service.authCallbackMiddleware = async (req, res, next) => {
 };
 
 service.authRefreshMiddleware = async (req, res, next) => {
-   
+   console.log(req.session,"session");
     const { refresh_token, expires_at } = await req.session;
     if (!refresh_token) {
         res.status(401).end();

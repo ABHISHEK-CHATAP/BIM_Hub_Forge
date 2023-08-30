@@ -3,23 +3,10 @@ import illustration from "../../assets/Illustration.svg";
 import axios from "axios";
 
 const LoginForm = () => {
-  const handleAuthentication = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/api/auth/login");
-
-      // Redirect the user to the obtained URL
-      if (response.status === 200) {
-        console.log(response.data);
-
-        const redirectUrl = response.data.redirectUrl;
-        window.location.href = redirectUrl;
-      }
-
-      return response;
-    } catch (error) {
-      // Handle login error
-      console.log(error);
-    }
+  
+  const handleAuthentication = () => {
+    // Redirect to the backend's /auth endpoint for Forge authentication
+    window.location.href = 'http://localhost:8080/api/auth/login'; // Replace with your backend's URL
   };
 
   return (
