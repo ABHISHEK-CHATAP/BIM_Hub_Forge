@@ -14,12 +14,13 @@ import {
 import API from "../api";
 import axios from "axios";
 import { getCookie } from "../utils/getCookiesData";
+import { useNavigate } from "react-router-dom";
 const settings = ["Profile", "Logout"];
 
 const Header = () => {
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [userProfile, setUserProfile] = React.useState();
-
+  const [userProfile, setUserProfile] = React.useState<any>();
+  const navigate = useNavigate();
   const handleOpenUserMenu = (event: any) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -27,33 +28,7 @@ const Header = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const myCookieValue = JSON.parse(getCookie("sessionData") || "{}");
-  console.log(myCookieValue);
-
-  localStorage.setItem("token", myCookieValue || "{}");
-
-  // React.useEffect(() => {
-  //   // Define the headers with the authorization token
-  //   const headers = {
-  //     Authorization: `Bearer ${myCookieValue.internal_token}`,
-  //     "Content-Type": "application/json",
-  //   };
-
-  //   // Define the API endpoint
-  //   const apiUrl = "http://localhost:8080/api/auth/profile";
-
-  //   // Make the API call with the headers
-  //   axios
-  //     .get(apiUrl, { headers })
-  //     .then((response) => {
-  //       // Handle the response
-  //       setUserProfile(response.data);
-  //     })
-  //     .catch((error) => {
-  //       // Handle errors
-  //       console.error("Error:", error);
-  //     });
-  // }, []);
+  
 
   return (
     <div>
@@ -72,7 +47,9 @@ const Header = () => {
                     alt="Remy Sharp"
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80"
                   />
-                  {/* <Typography>{userProfile}</Typography> */}
+                  <Typography>
+                    {userProfile?.data[0].attributes.name}
+                  </Typography>
                 </IconButton>
               </Tooltip>
               <Menu
@@ -93,7 +70,12 @@ const Header = () => {
               >
                 {settings.map((setting) => (
                   <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                    <Typography
+                      textAlign="center"
+                      onClick={() => setting === "Logout" && navigate("/")}
+                    >
+                      {setting}
+                    </Typography>
                   </MenuItem>
                 ))}
               </Menu>

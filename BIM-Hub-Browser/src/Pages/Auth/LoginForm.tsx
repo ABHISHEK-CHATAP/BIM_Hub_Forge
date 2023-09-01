@@ -6,7 +6,7 @@ const LoginForm = () => {
   
   const handleAuthentication = () => {
     // Redirect to the backend's /auth endpoint for Forge authentication
-    window.location.href = 'http://localhost:8080/api/auth/login'; // Replace with your backend's URL
+    window.location.href = `${import.meta.env.VITE_APP_BASE_URL}/api/auth/login`; // Replace with your backend's URL
   };
 
   return (
