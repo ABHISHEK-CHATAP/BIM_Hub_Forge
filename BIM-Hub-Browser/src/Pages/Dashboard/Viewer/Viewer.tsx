@@ -1,17 +1,15 @@
-import React from 'react'
-import { ForgeViewer } from "@lagarsoft/forge-viewer-react"
-import { getCookie } from '../../../utils/getCookiesData';
+import React, { useEffect } from "react";
+import launchViewer from "./InitializeViewer";
 
-const urn = '';
+const urn =
+  "dXJuOmFkc2sud2lwcHJvZDpmcy5maWxlOnZmLkRiMzdOWDAwUXJXbFRrOXZFSHdmTFE_dmVyc2lvbj0x";
 const Viewer = () => {
-  const myCookieValue = JSON.parse(getCookie("sessionData") || "{}");
-  return (
-    <div>
-       {myCookieValue.public_token  && (
-         <ForgeViewer urn={urn} accessToken={myCookieValue.public_token} />
-      )}
-    </div>
-  )
-}
+ 
+  useEffect(() => {
+    launchViewer("viewerDiv", urn);
+  },[]);
 
-export default Viewer
+  return <div style={{ position:"relative",width: "75%", height: "92vh" }} id="viewerDiv" />;
+};
+
+export default Viewer;

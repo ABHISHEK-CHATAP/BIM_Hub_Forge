@@ -48,18 +48,7 @@ const Home = () => {
       }}
     >
       <Sidebar />
-      <div
-        style={{
-          width: "75%",
-          height: "92vh",
-          right: 0,
-          top: "3em",
-          bottom: 0,
-          border: "1px solid #3f3f3f",
-        }}
-      >
         <Viewer />
-      </div>
     </div>
   );
 };
