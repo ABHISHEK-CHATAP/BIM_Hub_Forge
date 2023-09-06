@@ -5,6 +5,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import axios from "axios";
 import { getCookie } from "../../../utils/getCookiesData";
+import launchViewer from "../Viewer/initializeViewer";
 
 // const renderTree = (node: any) => (
 //   <TreeItem
@@ -260,6 +261,7 @@ function CustomTreeView() {
             )
         )
     );
+    
 
     if (!parentNode) return;
 
@@ -298,8 +300,9 @@ function CustomTreeView() {
 
     if (superSubchildNodeToUpdate.children.length === 0) {
       // Fetch data from your API here based on the superSubchildNodeId
+      
       axios
-        .get(`https://developer.api.autodesk.com/data/v1/projects/${parentNode.id}/items/${superSubchildNodeId}`, { headers }) // Replace YOUR_API_ENDPOINT with the actual endpoint for fetching super subchild node data
+        .get(`https://developer.api.autodesk.com/data/v1/projects/${childNode.id}/items/${superSubchildNodeId}/versions`, { headers }) // Replace YOUR_API_ENDPOINT with the actual endpoint for fetching super subchild node data
         .then((response) => {
           // Update the children of the super subchild node
           superSubchildNodeToUpdate.children = response.data.data.map(
@@ -379,9 +382,10 @@ function CustomTreeView() {
                                     key={superSubchildNode.id}
                                     nodeId={superSubchildNode.id}
                                     label={
-                                      superSubchildNode.attributes.name ||
-                                      superSubchildNode.attributes.displayName
+                                      superSubchildNode.attributes.createTime ||
+                                      superSubchildNode.attributes.createTime
                                     }
+                                    onClick={()=>launchViewer('viewerDiv',btoa(superSubchildNode.id))}
                                   />
                                 )
                               )}
