@@ -9,7 +9,7 @@ const Viewer = () => {
     launchViewer("viewerDiv", urn);
   },[]);
 
-  return <div style={{ position:"relative",width: "75%", height: "92vh" }} id="viewerDiv" />;
+  return <div style={{ position:"relative",width: "70%", height: "92vh" }} id="viewerDiv" />;
 };
 
 export default Viewer;
