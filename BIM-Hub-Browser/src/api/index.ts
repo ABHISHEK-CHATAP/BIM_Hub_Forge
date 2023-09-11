@@ -3,11 +3,9 @@ import { requestHandler, successHandler, errorHandler } from './interceptor/inde
 
 const ApiFn = () =>
   axios.create({
-    baseURL: `${import.meta.env.VITE_APP_BASE_URL}`,
     headers: {
       'Content-type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'origin-name': window.location.origin.toString(),
     },
   });
 

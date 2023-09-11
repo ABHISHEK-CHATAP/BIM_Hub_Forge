@@ -11,9 +11,6 @@ import {
   Tooltip,
   MenuItem,
 } from "@mui/material";
-import API from "../api";
-import axios from "axios";
-import { getCookie } from "../utils/getCookiesData";
 import { useNavigate } from "react-router-dom";
 const settings = ["Profile", "Logout"];
 
@@ -28,7 +25,13 @@ const Header = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  
+
+  const handleLogout = (options: any) => {
+    if (options === "Logout") {
+      navigate("/");
+      localStorage.removeItem("tokens");
+    }
+  };
 
   return (
     <div>
@@ -47,9 +50,7 @@ const Header = () => {
                     alt="Remy Sharp"
                     src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=387&q=80"
                   />
-                  <Typography>
-                    {userProfile?.data[0].attributes.name}
-                  </Typography>
+                 <Typography>{userProfile}</Typography>
                 </IconButton>
               </Tooltip>
               <Menu
@@ -72,7 +73,7 @@ const Header = () => {
                   <MenuItem key={setting} onClick={handleCloseUserMenu}>
                     <Typography
                       textAlign="center"
-                      onClick={() => setting === "Logout" && navigate("/")}
+                      onClick={() => handleLogout(setting)}
                     >
                       {setting}
                     </Typography>

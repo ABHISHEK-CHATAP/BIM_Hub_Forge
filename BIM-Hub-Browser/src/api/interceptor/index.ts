@@ -1,4 +1,4 @@
-import axios from 'axios';
+
 interface Config {
   handlerEnabled?: boolean;
 }
@@ -10,7 +10,7 @@ export const isHandlerEnabled = (config: Config = {}): boolean =>
 export const requestHandler = async (request: any) => {
   if (isHandlerEnabled(request)) {
     // DO SOMETHING
-    const temp = JSON.parse(localStorage.getItem('token') || '{}');
+    const temp = JSON.parse(localStorage.getItem('tokens') || '{}');
     const token = temp.public_token;
     if (token) {
       request.headers.Authorization = `Bearer ${token}`;
@@ -36,7 +36,7 @@ interface CustomError {
 export const errorHandler = (error: CustomError): Promise<never> => {
   if (isHandlerEnabled(error.config)) {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('tokens');
       window.location.href = '/';
     }
     // DO SOMETHING
