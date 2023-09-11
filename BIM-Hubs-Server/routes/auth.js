@@ -10,7 +10,7 @@ const {
 let router = express.Router();
 
 router.get("/api/auth/login", function (req, res) {
-  res.json({redirectUrl: getAuthorizationUrl()});
+  res.redirect(getAuthorizationUrl());
 });
 
 router.get("/api/auth/logout", function (req, res) {
