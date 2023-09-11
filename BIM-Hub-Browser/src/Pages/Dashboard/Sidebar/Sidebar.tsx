@@ -8,6 +8,7 @@ import { getCookie } from "../../../utils/getCookiesData";
 import launchViewer from "../Viewer/initializeViewer";
 import { useNavigate } from "react-router-dom";
 
+
 function CustomTreeView() {
   const [data, setData] = useState<any>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
@@ -188,6 +189,7 @@ function CustomTreeView() {
             )
         )
     );
+    
 
     if (!parentNode) return;
     const childNode = parentNode.children.find(
@@ -291,8 +293,8 @@ function CustomTreeView() {
                                     key={superSubchildNode.id}
                                     nodeId={superSubchildNode.id}
                                     label={
-                                      superSubchildNode.attributes.name ||
-                                      superSubchildNode.attributes.displayName
+                                      superSubchildNode.attributes.createTime ||
+                                      superSubchildNode.attributes.createTime
                                     }
                                     onClick={() =>
                                       launchViewer(
