@@ -1,176 +1,126 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { TreeView, TreeItem } from "@mui/lab";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-
 import axios from "axios";
+import API from "../../../api";
 import { getCookie } from "../../../utils/getCookiesData";
 import launchViewer from "../Viewer/initializeViewer";
+import { useNavigate } from "react-router-dom";
 
-// const renderTree = (node: any) => (
-//   <TreeItem
-//     key={node.id}
-//     nodeId={node.id}
-//     label={node.attributes.name || node.attributes.displayName}
-//   >
-//     {node.children.map((child: any) =>
-//       Array.isArray(child.children) ? (
-//         renderTree(child)
-//       ) : (
-//         <TreeItem
-//           key={child.id}
-//           nodeId={child.id}
-//           label={child.attributes.name || child.attributes.displayName}
-//           icon={<FolderOpenRoundedIcon />}
-//         />
-//       )
-//     )}
-//   </TreeItem>
-// );
 
 function CustomTreeView() {
   const [data, setData] = useState<any>([]);
-
+  const [expanded, setExpanded] = useState<string[]>([]);
   const myCookieValue = JSON.parse(getCookie("sessionData") || "{}");
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch the initial data (root nodes) on page load
     const headers = {
       Authorization: `Bearer ${myCookieValue.public_token}`,
       "Content-Type": "application/json",
     };
 
-    // Define the API endpoint
     const apiUrl = "https://developer.api.autodesk.com/project/v1/hubs";
-
-    // Make the API call with the headers
+    localStorage.setItem("tokens", JSON.stringify(myCookieValue));
     axios
       .get(apiUrl, { headers })
       .then((response) => {
-        const rootNodes = response.data.data.map((hub: any) => ({
-          type: hub?.type,
-          id: hub?.id,
-          attributes: hub?.attributes,
-          children: null, // Initialize as null
-          // isExpanded: false, // Initially not expanded
-          // isLoading: false,
-        }));
-        setData(rootNodes);
+        if (response.status === 200) {
+          const rootNodes = response.data.data.map((hub: any) => ({
+            type: hub?.type,
+            id: hub?.id,
+            attributes: hub?.attributes,
+            children: null,
+          }));
+          setData(rootNodes);
+        }
       })
       .catch((error) => {
+        if (error.response.status === 401) {
+          localStorage.removeItem("tokens");
+          navigate("/");
+        }
         console.error(error);
       });
   }, []);
 
-  console.log(data, "treedata");
+  const handleExpandedNode = (id: string) => {
+    if (expanded.includes(id)) {
+      setExpanded(
+        expanded.filter((item: any) => {
+          return item !== id;
+        })
+      );
+    } else {
+      setExpanded([...expanded, id]);
+    }
+  };
 
   const handleNodeExpand = (event: any, nodeId: any) => {
-    
+    handleExpandedNode(nodeId);
 
-    const headers = {
-      Authorization: `Bearer ${myCookieValue.public_token}`,
-      "Content-Type": "application/json",
-    };
-    // Find the node to expand in the data
     const nodeToUpdate = data.find((node: any) => node.id === nodeId);
     if (!nodeToUpdate) return;
-
     if (nodeToUpdate.children === null) {
-      // Fetch data from your API here based on the nodeId
-      // nodeToUpdate.isLoading = true;
-
-      axios
-        .get(
-          `https://developer.api.autodesk.com/project/v1/hubs/${nodeId}/projects`,
-          { headers }
-        )
+      API.get(
+        `https://developer.api.autodesk.com/project/v1/hubs/${nodeId}/projects`
+      )
         .then((response) => {
-          // Update the children of the expanded node
           nodeToUpdate.children = response.data.data.map((project: any) => ({
             type: project?.type,
             id: project?.id,
             attributes: project?.attributes,
-            children: [], // Initialize an empty children array for projects
+            children: [],
           }));
-          // nodeToUpdate.isLoading = false;
-          // nodeToUpdate.isExpanded = true;
-          setData([...data]); // Update the state to trigger a re-render
-        })
-        .catch((error) => {
-          console.error(error);
-          // nodeToUpdate.isLoading = false;
-        });
-    } else {
-      // Toggle the expanded state if children are already present
-      // nodeToUpdate.isExpanded = !nodeToUpdate.isExpanded;
-      setData([...data]); // Update the state to trigger a re-render
-    }
-  };
-
-  const handleChildNodeExpand = (event: any, childNodeId: any) => {
-    // Make an API call to fetch data for the child node based on childNodeId
-    const headers = {
-      Authorization: `Bearer ${myCookieValue.public_token}`,
-      "Content-Type": "application/json",
-    };
-
-    // Find the child node to expand in the data
-    const parentNode = data.find(
-      (node: any) =>
-        node.children &&
-        node.children.some((child: any) => child.id === childNodeId)
-    );
-    
-
-    if (!parentNode) return;
-
-    // Find the child node within the parent node
-    const childNodeToUpdate = parentNode.children.find(
-      (child: any) => child.id === childNodeId
-    );
-
-    if (!childNodeToUpdate) return;
-
-    if (childNodeToUpdate.children.length === 0) {
-      // Fetch data from your API here based on the childNodeId
-      axios
-        .get(
-          `https://developer.api.autodesk.com/project/v1/hubs/${parentNode.id}/projects/${childNodeId}/topFolders`,
-          { headers }
-        )
-        .then((response) => {
-
-          // Update the children of the child node
-          childNodeToUpdate.children = response.data.data.map((item: any) => ({
-            type: item?.type,
-            id: item?.id,
-            attributes: item?.attributes,
-            children: [], // Initialize an empty children array if necessary
-          }));
-
-          // Update the state to trigger a re-render
           setData([...data]);
         })
         .catch((error) => {
           console.error(error);
         });
     } else {
-      // Toggle the expanded state if children are already present
-      childNodeToUpdate.isExpanded = !childNodeToUpdate.isExpanded;
+      setData([...data]);
+    }
+  };
 
-      // Update the state to trigger a re-render
+  const handleChildNodeExpand = (event: any, childNodeId: any) => {
+    handleExpandedNode(childNodeId);
+
+    const parentNode = data.find(
+      (node: any) =>
+        node.children &&
+        node.children.some((child: any) => child.id === childNodeId)
+    );
+
+    if (!parentNode) return;
+    const childNodeToUpdate = parentNode.children.find(
+      (child: any) => child.id === childNodeId
+    );
+    if (!childNodeToUpdate) return;
+    if (childNodeToUpdate.children.length === 0) {
+      API.get(
+        `https://developer.api.autodesk.com/project/v1/hubs/${parentNode.id}/projects/${childNodeId}/topFolders`
+      )
+        .then((response) => {
+          childNodeToUpdate.children = response.data.data.map((item: any) => ({
+            type: item?.type,
+            id: item?.id,
+            attributes: item?.attributes,
+            children: [],
+          }));
+          setData([...data]);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
       setData([...data]);
     }
   };
 
   const handleSubchildNodeExpand = (subchildNodeId: any) => {
-    // Make an API call to fetch data for the subchild node based on subchildNodeId
-    const headers = {
-      Authorization: `Bearer ${myCookieValue.public_token}`,
-      "Content-Type": "application/json",
-    };
+    handleExpandedNode(subchildNodeId);
 
-    // Find the parent node of the subchild node
     const parentNode = data.find(
       (node: any) =>
         node.children &&
@@ -184,67 +134,45 @@ function CustomTreeView() {
     );
 
     if (!parentNode) return;
-
-    // Find the child node containing the subchild node
     const childNode = parentNode.children.find(
       (child: any) =>
         child.children &&
         child.children.some((subchild: any) => subchild.id === subchildNodeId)
     );
-
     if (!childNode) return;
-
-    // Find the subchild node within the child node
     const subchildNodeToUpdate = childNode.children.find(
       (subchild: any) => subchild.id === subchildNodeId
     );
 
     if (!subchildNodeToUpdate) return;
-
     if (subchildNodeToUpdate.children.length === 0) {
-      // Fetch data from your API here based on the subchildNodeId
-      axios
-        .get(
-          `https://developer.api.autodesk.com/data/v1/projects/${childNode.id}/folders/${subchildNodeId}/contents`,
-          { headers }
-        ) // Replace YOUR_API_ENDPOINT with the actual endpoint for fetching subchild node data
+      API.get(
+        `https://developer.api.autodesk.com/data/v1/projects/${childNode.id}/folders/${subchildNodeId}/contents`
+      )
         .then((response) => {
-          // Update the children of the subchild node
           subchildNodeToUpdate.children = response.data.data.map(
             (item: any) => ({
               type: item?.type,
               id: item?.id,
               attributes: item?.attributes,
-              children: [], // Initialize an empty children array if necessary
+              children: [],
             })
           );
-
-          // Set the subchild node as expanded
           subchildNodeToUpdate.isExpanded = true;
-
-          // Update the state to trigger a re-render
           setData([...data]);
         })
         .catch((error) => {
           console.error(error);
         });
     } else {
-      // Toggle the expanded state if children are already present
       subchildNodeToUpdate.isExpanded = !subchildNodeToUpdate.isExpanded;
-
-      // Update the state to trigger a re-render
       setData([...data]);
     }
   };
 
   const handleSuperSubchildNodeExpand = (superSubchildNodeId: any) => {
-    // Make an API call to fetch data for the super subchild node based on superSubchildNodeId
-    const headers = {
-      Authorization: `Bearer ${myCookieValue.public_token}`,
-      "Content-Type": "application/json",
-    };
+    handleExpandedNode(superSubchildNodeId);
 
-    // Find the parent node of the super subchild node
     const parentNode = data.find(
       (node: any) =>
         node.children &&
@@ -264,8 +192,6 @@ function CustomTreeView() {
     
 
     if (!parentNode) return;
-
-    // Find the child node containing the subchild node
     const childNode = parentNode.children.find(
       (child: any) =>
         child.children &&
@@ -279,8 +205,6 @@ function CustomTreeView() {
     );
 
     if (!childNode) return;
-
-    // Find the subchild node containing the super subchild node
     const subchildNode = childNode.children.find(
       (subchild: any) =>
         subchild.children &&
@@ -288,43 +212,30 @@ function CustomTreeView() {
           (superSubchild: any) => superSubchild.id === superSubchildNodeId
         )
     );
-
     if (!subchildNode) return;
-
-    // Find the super subchild node within the subchild node
     const superSubchildNodeToUpdate = subchildNode.children.find(
       (superSubchild: any) => superSubchild.id === superSubchildNodeId
     );
-
     if (!superSubchildNodeToUpdate) return;
-
     if (superSubchildNodeToUpdate.children.length === 0) {
-      // Fetch data from your API here based on the superSubchildNodeId
-      
-      axios
-        .get(`https://developer.api.autodesk.com/data/v1/projects/${childNode.id}/items/${superSubchildNodeId}/versions`, { headers }) // Replace YOUR_API_ENDPOINT with the actual endpoint for fetching super subchild node data
+      API.get(
+        `https://developer.api.autodesk.com/data/v1/projects/${childNode.id}/items/${superSubchildNodeId}/versions`
+      )
         .then((response) => {
-          // Update the children of the super subchild node
           superSubchildNodeToUpdate.children = response.data.data.map(
             (item: any) => ({
               type: item?.type,
               id: item?.id,
               attributes: item?.attributes,
-              children: [], // Initialize an empty children array if necessary
+              children: [],
             })
           );
-
-          // Set the super subchild node as expanded
-          superSubchildNodeToUpdate.isExpanded = true;
-
-          // Update the state to trigger a re-render
           setData([...data]);
         })
         .catch((error) => {
           console.error(error);
         });
     } else {
-      // Update the state to trigger a re-render
       setData([...data]);
     }
   };
@@ -333,9 +244,9 @@ function CustomTreeView() {
     <TreeView
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
+      expanded={expanded}
       onNodeToggle={handleNodeExpand}
     >
-      {/* Render your tree nodes here */}
       {data.map((node: any) => (
         <TreeItem
           key={node.id}
@@ -385,7 +296,12 @@ function CustomTreeView() {
                                       superSubchildNode.attributes.createTime ||
                                       superSubchildNode.attributes.createTime
                                     }
-                                    onClick={()=>launchViewer('viewerDiv',btoa(superSubchildNode.id))}
+                                    onClick={() =>
+                                      launchViewer(
+                                        "viewerDiv",
+                                        btoa(superSubchildNode.id)
+                                      )
+                                    }
                                   />
                                 )
                               )}

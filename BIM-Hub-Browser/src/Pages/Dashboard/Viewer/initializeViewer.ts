@@ -32,10 +32,12 @@ function launchViewer(div: string, urn: string) {
              
             });
         } else {
+          // alert('Could not load model. See console for more details.');
           console.error("No default geometry found");
         }
       },
       function (error:any) {
+        alert('Could not load model. See console for more details.');
         console.error("Error loading document: " + error);
       }
     );
