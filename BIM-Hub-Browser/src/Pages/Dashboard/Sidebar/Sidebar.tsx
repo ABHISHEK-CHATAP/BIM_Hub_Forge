@@ -7,11 +7,13 @@ import API from "../../../api";
 import { getCookie } from "../../../utils/getCookiesData";
 import launchViewer from "../Viewer/initializeViewer";
 import { useNavigate } from "react-router-dom";
-
+import { Button, Dialog, DialogContent } from "@mui/material";
+import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined';
 
 function CustomTreeView() {
   const [data, setData] = useState<any>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const myCookieValue = JSON.parse(getCookie("sessionData") || "{}");
   const navigate = useNavigate();
 
@@ -189,7 +191,6 @@ function CustomTreeView() {
             )
         )
     );
-    
 
     if (!parentNode) return;
     const childNode = parentNode.children.find(
@@ -240,88 +241,122 @@ function CustomTreeView() {
     }
   };
 
+  const handleContextMenu = (e: any, type: string) => {
+    e.preventDefault(); 
+    if (type === "folders") {
+      setDialogOpen(true);
+    }
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+  };
+
+  const handleUpload = () => {
+
+  };
+
   return (
-    <TreeView
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpandIcon={<ChevronRightIcon />}
-      expanded={expanded}
-      onNodeToggle={handleNodeExpand}
-    >
-      {data.map((node: any) => (
-        <TreeItem
-          key={node.id}
-          nodeId={node.id}
-          label={node.attributes.name} // Adjust this based on your data structure
-          onClick={(event) => handleNodeExpand(event, node.id)}
-          // endIcon={node.isLoading && 'loading...'}
-        >
-          {node.children &&
-            node.children.map((childNode: any) => (
-              <TreeItem
-                key={childNode.id}
-                nodeId={childNode.id}
-                label={childNode.attributes.name} // Adjust this based on your data structure
-                onClick={(event) => handleChildNodeExpand(event, childNode.id)}
-              >
-                {childNode.children &&
-                  childNode.children.map((subchildNode: any) => (
-                    <TreeItem
-                      key={subchildNode.id}
-                      nodeId={subchildNode.id}
-                      label={subchildNode.attributes.name}
-                      onClick={(event) =>
-                        handleSubchildNodeExpand(subchildNode.id)
-                      }
-                    >
-                      {subchildNode.children &&
-                        subchildNode.children.map((subchildNode: any) => (
-                          <TreeItem
-                            key={subchildNode.id}
-                            nodeId={subchildNode.id}
-                            label={
-                              subchildNode.attributes.name ||
-                              subchildNode.attributes.displayName
-                            }
-                            onClick={(event) =>
-                              handleSuperSubchildNodeExpand(subchildNode.id)
-                            }
-                          >
-                            {subchildNode.children &&
-                              subchildNode.children.map(
-                                (superSubchildNode: any) => (
-                                  <TreeItem
-                                    key={superSubchildNode.id}
-                                    nodeId={superSubchildNode.id}
-                                    label={
-                                      superSubchildNode.attributes.createTime ||
-                                      superSubchildNode.attributes.createTime
-                                    }
-                                    onClick={() =>
-                                      launchViewer(
-                                        "viewerDiv",
-                                        btoa(superSubchildNode.id)
-                                      )
-                                    }
-                                  />
-                                )
-                              )}
-                          </TreeItem>
-                        ))}
-                    </TreeItem>
-                  ))}
-              </TreeItem>
-            ))}
-        </TreeItem>
-      ))}
-    </TreeView>
+    <>
+      <TreeView
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpandIcon={<ChevronRightIcon />}
+        expanded={expanded}
+        onNodeToggle={handleNodeExpand}
+      >
+        {data.map((node: any) => (
+          <TreeItem
+            key={node.id}
+            nodeId={node.id}
+            label={node.attributes.name} // Adjust this based on your data structure
+            onClick={(event) => handleNodeExpand(event, node.id)}
+            // endIcon={node.isLoading && 'loading...'}
+          >
+            {node.children &&
+              node.children.map((childNode: any) => (
+                <TreeItem
+                  key={childNode.id}
+                  nodeId={childNode.id}
+                  label={childNode.attributes.name} // Adjust this based on your data structure
+                  onClick={(event) =>
+                    handleChildNodeExpand(event, childNode.id)
+                  }
+                >
+                  {childNode.children &&
+                    childNode.children.map((subchildNode: any) => (
+                      <TreeItem
+                        key={subchildNode.id}
+                        nodeId={subchildNode.id}
+                        label={subchildNode.attributes.name}
+                        onClick={(event) =>
+                          handleSubchildNodeExpand(subchildNode.id)
+                        }
+                      >
+                        {subchildNode.children &&
+                          subchildNode.children.map((subchildNode: any) => (
+                            <TreeItem
+                              key={subchildNode.id}
+                              nodeId={subchildNode.id}
+                              label={
+                                subchildNode.attributes.name ||
+                                subchildNode.attributes.displayName
+                              }
+                              onContextMenu={(event) =>
+                                handleContextMenu(event, subchildNode.type)
+                              }
+                              onClick={(event) =>
+                                handleSuperSubchildNodeExpand(subchildNode.id)
+                              }
+                            >
+                              {subchildNode.children &&
+                                subchildNode.children.map(
+                                  (superSubchildNode: any) => (
+                                    <TreeItem
+                                      key={superSubchildNode.id}
+                                      nodeId={superSubchildNode.id}
+                                      label={
+                                        superSubchildNode.attributes
+                                          .createTime ||
+                                        superSubchildNode.attributes.createTime
+                                      }
+                                      onClick={() =>
+                                        launchViewer(
+                                          "viewerDiv",
+                                          btoa(superSubchildNode.id)
+                                        )
+                                      }
+                                    />
+                                  )
+                                )}
+                            </TreeItem>
+                          ))}
+                      </TreeItem>
+                    ))}
+                </TreeItem>
+              ))}
+          </TreeItem>
+        ))}
+      </TreeView>
+      {dialogOpen && (
+        <Dialog hideBackdrop open={dialogOpen} onClose={handleDialogClose}>
+          <DialogContent>
+            <Button variant="outlined" startIcon={<BackupOutlinedIcon />} onClick={handleUpload}>
+              Upload
+            </Button>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 }
-
+console.log('====================================');
+console.log("asdgfsadsatd");
+console.log('====================================');
 const Sidebar = () => {
   return (
     <div
       style={{
-        width: "30%",
+        width: "25%",
         height: "92vh",
         left: 0,
         top: "3em",

@@ -6,6 +6,7 @@ const { PORT, SERVER_SESSION_SECRET } = require("./config/config.js");
 let app = express();
 
 // Allow only specific origins
+// Configuring the CORS middleware
 const corsOptions = {
   origin: '*',
   methods: "GET,PUT,PATCH,POST,DELETE",

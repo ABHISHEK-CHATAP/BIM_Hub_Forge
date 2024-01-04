@@ -15,8 +15,8 @@ if (
   console.warn("Missing some of the environment variables.");
   process.exit(1);
 }
-const INTERNAL_TOKEN_SCOPES = ["data:read","data:create"];
-const PUBLIC_TOKEN_SCOPES = ["data:read","data:create"];
+const INTERNAL_TOKEN_SCOPES = ["data:read", "data:create"];
+const PUBLIC_TOKEN_SCOPES = ["data:read", "data:create"];
 PORT = PORT || 8080;
 
 module.exports = {

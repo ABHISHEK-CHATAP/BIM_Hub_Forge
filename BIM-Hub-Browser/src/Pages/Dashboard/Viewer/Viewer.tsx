@@ -1,7 +1,7 @@
 const Viewer = () => {
   return (
     <div
-      style={{ position: "relative", width: "70%", height: "92vh" }}
+      style={{ position: "relative", width: "75%", height: "92vh" }}
       id="viewerDiv"
     />
   );
